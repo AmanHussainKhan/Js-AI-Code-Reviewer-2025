@@ -16,7 +16,18 @@ function App() {
   useEffect(() => {
     prism.highlightAll();
   }, []);
-
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("http://localhost:3000/");
+        console.log("✅ Data coming:", response.data);
+      } catch (error) {
+        console.error("❌ Error fetching data:", error);
+      }
+    };
+  
+    fetchData();
+  }, []);
   async function reviewCode() {
     setLoading(true);
     try {

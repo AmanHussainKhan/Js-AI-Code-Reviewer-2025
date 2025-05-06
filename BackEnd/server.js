@@ -1,16 +1,25 @@
 require('dotenv').config()
-const app = require('./src/app')
+const express = require('express');
+const aiRoutes = require('../routes/ai.routes')
+const app = express();
+const cors = require('cors')
 
-// console.log(process.env.GOOGLE_GEMINI_KEY)
-app.get('/',async(req,res)=>{
-    try {
-        res.status(200).json({success:true,message:"Backend is working fine."})
-        
-    } catch (error) {
-        res.status(500).json({success:false,message:"Backend error.",error:error})
-        
-    }
+
+
+app.use(express.json())
+
+const corsOptions = {
+    origin: process.env.FRONTEND_URL,
+    methods: ["GET","POST","PUT","DELETE"],
+    allowedHeaders:["Content-Type","Authorization"],
+};
+app.use(cors(corsOptions))
+
+app.get('/', (req, res) => {
+    res.send('Hello World')
 })
+app.use('/ai', aiRoutes)
+
 app.listen(process.env.PORT, () => {
     console.log('Server is running on http://localhost:3000')
 })

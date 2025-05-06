@@ -8,134 +8,112 @@ import "highlight.js/styles/github-dark.css";
 import axios from "axios";
 import "./App.css";
 
+const DEFAULT_CODE = `const rows = 5;
+
+for (let i = 1; i <= rows; i++) {
+  let starRow = "";
+  for (let j = 1; j <= i; j++) {
+    starRow += "*";
+  }
+  console.log(starRow);
+}
+`;
+
 function App() {
-  const [code, setCode] = useState(`const data = await fetch('url')\nconsole.log(data);`);
-  const [review, setReview] = useState(``);
+  const [code, setCode] = useState(DEFAULT_CODE);
+  const [review, setReview] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     prism.highlightAll();
   }, []);
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get("http://localhost:3000/");
-        console.log("✅ Data coming:", response.data);
-      } catch (error) {
-        console.error("❌ Error fetching data:", error);
-      }
-    };
-  
-    fetchData();
-  }, []);
+
   async function reviewCode() {
     setLoading(true);
+    setReview(""); // Hide previous review
     try {
       const response = await axios.post("http://localhost:3000/ai/get-review", {
         code,
       });
-      setReview(response.data);
+      setReview(response.data?.data || "No review received.");
     } catch (error) {
-      setReview("⚠️ Error fetching review. Please try again.");
+      setReview("An error occurred while reviewing your code.");
     }
     setLoading(false);
   }
 
-  return (
-    <>
-      <h1 style={{ textAlign: "center", margin: "1rem 0", color: "#4CAF50" }}>
-        JavaScript Error Helper
-      </h1>
-      <p
-        style={{
-          textAlign: "center",
-          marginBottom: "1.5rem",
-          padding: "0 1rem",
-          fontSize: "1rem",
-          color: "#ccc",
-        }}
-      >
-        Paste your JavaScript code with errors and get a solution and explanation.
-      </p>
+  function resetCode() {
+    setCode(DEFAULT_CODE);
+    setReview("");
+    setLoading(false);
+  }
 
-      <main
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "1.5rem",
-          padding: "1rem",
-          maxWidth: "1024px",
-          margin: "0 auto",
-        }}
-      >
-        <div
-          className="left"
-          style={{
-            width: "100%",
-            display: "flex",
-            flexDirection: "column",
-            gap: "0.75rem",
-          }}
-        >
+  return (
+    <div className="bg-gray-950">
+      {/* Navbar */}
+      <nav className="p-4 bg-gray-900 w-full text-white text-center text-xl font-bold">
+        AI Code Reviewer
+      </nav>
+
+      {/* Main Content */}
+      <main className="flex h-screen flex-col md:flex-row gap-8 p-4 sm:p-6 md:p-8 max-w-6xl mx-auto w-full">
+        {/* Code Input Section */}
+        <div className="w-full md:w-1/2 flex flex-col gap-4">
+          <h2 className="text-blue-500 text-center text-lg font-semibold">
+            Enter Your Code
+          </h2>
           <Editor
             value={code}
-            onValueChange={(code) => setCode(code)}
+            onValueChange={setCode}
             highlight={(code) =>
               prism.highlight(code, prism.languages.javascript, "javascript")
             }
-            padding={10}
-            style={{
-              fontFamily: '"Fira code", "Fira Mono", monospace',
-              fontSize: 14,
-              borderRadius: "8px",
-              height: "200px",
-              width: "100%",
-              backgroundColor: "#1E1E1E",
-              color: "#D4D4D4",
-              border: "1px solid #4CAF50",
-              overflow: "auto",
-            }}
+            padding={12}
+            className="font-mono text-sm rounded-md h-72 bg-gray-800 text-gray-300 border border-blue-500 overflow-auto"
           />
 
-          <button
-            onClick={reviewCode}
-            style={{
-              padding: "0.75rem",
-              backgroundColor: "#4CAF50",
-              border: "none",
-              borderRadius: "6px",
-              color: "#121212",
-              fontWeight: "bold",
-              cursor: "pointer",
-              width: "100%",
-              maxWidth: "300px",
-              margin: "0 auto",
-              transition: "all 0.3s ease",
-            }}
-          >
-            {loading ? "Loading..." : "Review Code"}
-          </button>
+          {/* Buttons */}
+          <div className="flex gap-4 justify-center">
+            <button
+              onClick={reviewCode}
+              className="px-4 py-2 bg-blue-500 rounded-md text-white font-bold hover:bg-blue-600"
+              disabled={loading}
+            >
+              {loading ? "Loading..." : "Review Code"}
+            </button>
+            <button
+              onClick={resetCode}
+              className="px-4 py-2 bg-red-500 rounded-md text-white font-bold hover:bg-red-600"
+            >
+              Reset
+            </button>
+          </div>
         </div>
 
-        <div
-          className="right"
-          style={{
-            width: "100%",
-            backgroundColor: "#1E1E1E",
-            padding: "1rem",
-            borderRadius: "8px",
-            border: "1px solid #4CAF50",
-            color: "#D4D4D4",
-            overflowX: "auto",
-            minHeight: "150px",
-          }}
-        >
-          <Markdown rehypePlugins={[rehypeHighlight]}>
-            {loading ? "Please wait while we analyze your code..." : review}
-          </Markdown>
+        {/* Review Section */}
+        <div className="w-full md:w-1/2 max-h-10/12 overflow-x-hidden bg-gray-800 p-4 rounded-md border border-blue-500 text-gray-300 min-h-72">
+          <h2 className="text-blue-500 text-center text-lg font-semibold border-b border-gray-600 pb-2">
+            Reviewed Code
+          </h2>
+
+          <div className="py-4 overflow-y-auto text-sm">
+            {loading ? (
+              <p className="text-yellow-300 text-center text-sm">
+                Please wait while we analyze your code...
+              </p>
+            ) : review ? (
+              <Markdown rehypePlugins={[rehypeHighlight]}>{review}</Markdown>
+            ) : (
+              <p className="text-gray-400 text-center italic">
+                No review to display.
+              </p>
+            )}
+          </div>
         </div>
       </main>
-    </>
+
+      {/* Footer */}
+    </div>
   );
 }
 

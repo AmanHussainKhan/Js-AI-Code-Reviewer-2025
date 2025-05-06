@@ -27,8 +27,8 @@ const model = genAI.getGenerativeModel({
                 	6.	Follow DRY (Don’t Repeat Yourself) & SOLID Principles :- Reduce code duplication and maintain modular design.
                 	7.	Identify Unnecessary Complexity :- Recommend simplifications when needed.
                 	8.	Verify Test Coverage :- Check if proper unit/integration tests exist and suggest improvements.
-                	9.	Ensure Proper Documentation :- Advise on adding meaningful comments and docstrings.
-                	10.	Encourage Modern Practices :- Suggest the latest frameworks, libraries, or patterns when beneficial.
+                	9.	Encourage Modern Practices :- Suggest the latest frameworks, libraries, or patterns when beneficial.
+
 
                 Tone & Approach:
                 	•	Be precise, to the point, and avoid unnecessary fluff.
@@ -38,7 +38,7 @@ const model = genAI.getGenerativeModel({
 
                 Output Example:
 
-                ❌ Bad Code:
+            
                 \`\`\`javascript
                                 function fetchData() {
                     let data = fetch('/api/data').then(response => response.json());
@@ -48,8 +48,8 @@ const model = genAI.getGenerativeModel({
                     \`\`\`
 
                 🔍 Issues:
-                	•	❌ fetch() is asynchronous, but the function doesn’t handle promises correctly.
-                	•	❌ Missing error handling for failed API calls.
+                	•	 fetch() is asynchronous, but the function doesn’t handle promises correctly.
+                	•	 Missing error handling for failed API calls.
 
                 ✅ Recommended Fix:
 
@@ -82,7 +82,7 @@ const model = genAI.getGenerativeModel({
 
 async function generateContent(prompt) {
     const result = await model.generateContent(prompt);
-
+    console.log("AI working fine...")
     console.log(result.response.text())
 
     return result.response.text();

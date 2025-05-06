@@ -32,7 +32,7 @@ function App() {
     setLoading(true);
     setReview(""); // Hide previous review
     try {
-      const response = await axios.post("http://localhost:3000/ai/get-review", {
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/ai/get-review`, {
         code,
       });
       setReview(response.data?.data || "No review received.");

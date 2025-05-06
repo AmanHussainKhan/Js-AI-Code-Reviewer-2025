@@ -4,12 +4,14 @@ const app = express()
 const cors = require('cors')
 const path = require('path'); 
 
+const corsOptions = {
+    origin: process.env.FRONTEND_URL,
+    methods: ["GET","POST","PUT","DELETE"],
+    allowedHeaders:["Content-Type","Authorization"],
+};
 
-app.use(cors())
+app.use(cors(corsOptions))
 app.use(express.json())
-
-const __dirname =path.resolve()
-
 
 app.get('/', (req, res) => {
     res.send('Hello World')

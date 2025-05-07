@@ -88,6 +88,7 @@ function App() {
               Reset
             </button>
           </div>
+          <p className="text-gray-500">Backend is not connected...</p>
         </div>
 
         {/* Review Section */}
